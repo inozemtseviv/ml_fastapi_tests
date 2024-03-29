@@ -1,23 +1,11 @@
 from fastapi import FastAPI
 from transformers import pipeline
-from pydantic import BaseModel
 
+from app.routes.root_router import get_root_router
+from app.routes.predict_router import get_predict_router
 
-class Item(BaseModel):
-    text: str
-
-
-
-app = FastAPI()
 classifier = pipeline("sentiment-analysis")
 
-
-
-@app.get("/")
-def root():
-    return {"message": "Hello World"}
-
-
-@app.post("/predict/")
-def predict(item: Item):
-    return classifier(item.text)[0]
+app = FastAPI()
+app.include_router(get_root_router())
+app.include_router(get_predict_router(classifier))
